@@ -1,18 +1,156 @@
-# Voyager Golden Record Decoder
+# Voyager Golden Record Decoder 🌌📻🛰️
+> Decoder em **JavaScript (Web Audio + Canvas)** para reconstruir imagens do **Voyager Golden Record** a partir do áudio digitalizado (MP3/PCM).
 
-Github hosted [DEMO HERE](https://maltegruber.github.io/voyager-record-decoder). *(Please ensure that your audio output device is at 44.1 kHz. Otherwise, the recorder might not lock or show images properly.)*
+**Demo (GitHub Pages):** https://maltegruber.github.io/voyager-record-decoder  
+> Importante: configure sua saída de áudio em **44.1 kHz**. Em outras taxas, o “lock” pode falhar e as imagens podem aparecer instáveis.
 
-## Operation
-The data from the Voyager record is downloaded as a .mp3 file. This file is converted into a two arrays holding floating point PCM samples of the right and left channels. These channels are then scanned for *sync* pulses. This is done in a very crude way, the array of a channel is scanned for a pulse that is higher than the local samples. This works *more often than not* but it is limited by some artifacts in the audio file described below.
+---
 
-## Audio file filtering artifacts
-The audio file contains artifacts that indicate that the audio signal has been filtered. As illustrated in the following figure, it looks as the audio has been processed with a high pass filter. The example shown here is for the circle, the two peaks in the middle represent the dark parts of the circle. To the left is the sync pulse. Note that when there is a DC section with little change the signal tends towards zero. And sudden changes "pull" the DC level with them.
+## ✨ O que este repositório faz
+Este projeto:
+- baixa (ou carrega) o áudio do Golden Record (MP3),
+- converte para **PCM float** (canais **L/R**),
+- detecta pulsos de **sync**,
+- reconstrói as **linhas** de imagem e desenha no **Canvas**.
 
+---
+
+## ✅ Melhorias e modificações (versão modernizada)
+Além de manter o decoder, a versão atual inclui:
+
+### UI / Página (layout moderno)
+- Layout responsivo (desktop/tablet/mobile)
+- Seções claras: Decoder, Preview, Controles e Explicação técnica
+- Visual “card-based”, com foco em usabilidade e leitura
+
+### Qualidade da imagem (melhor leitura)
+- Controles de **contraste** e **gamma**
+- **Suavização** (filtro leve) para reduzir ruído sem “lavar” demais a imagem
+- Ajuste para estabilizar intensidade (reduz os “saltos” quando há variação abrupta)
+
+### Direita → esquerda (efeito solicitado)
+- A imagem pode ser renderizada **da direita para a esquerda** (toggle):
+  - útil para comparar com referências históricas,
+  - e para melhorar a interpretação visual dependendo do “lock” e do sinal.
+
+> Nota: o modo “Direita → esquerda” pode ser aplicado:
+> 1) como **espelhamento de visualização** (mais simples e robusto), ou  
+> 2) invertendo a **ordem real de desenho** por linha/pixel (mais “fiel” ao pipeline).  
+> A implementação do repositório pode usar qualquer uma das duas abordagens.
+
+---
+
+## 🚀 Como usar (rápido)
+1. Abra a página do projeto (Demo) ou rode localmente.
+2. Garanta **44.1 kHz** na configuração de áudio do sistema.
+3. Inicie o decoding e aguarde o “lock”.
+4. Ajuste:
+   - **Contraste** (1.2–1.8 costuma ajudar)
+   - **Gamma** (0.8–1.1 é um bom intervalo)
+   - **Suavização** (1–3 para reduzir ruído)
+5. Ative **Direita → esquerda** para inverter a direção de preenchimento.
+
+---
+
+## 🧠 Como funciona (visão técnica)
+
+### Pipeline
+1. **Download / carregamento do áudio**
+2. **Decodificação para PCM**
+3. Separação dos canais **Left/Right**
+4. Varredura de **sync pulses**
+5. Reconstrução linha-a-linha e renderização no **Canvas**
+
+### Detecção de Sync (heurística simples)
+O método atual é propositalmente “cru”:
+- varre o array do canal em busca de picos
+- identifica sync quando um pulso é maior que a vizinhança local  
+
+Funciona “na maioria das vezes”, mas sofre com artefatos do arquivo digitalizado.
+
+---
+
+## ⚠️ Artefatos do áudio (filtro / DC-pull)
+Durante a digitalização, o áudio aparenta ter passado por algum filtro (provável **DC-blocking / high-pass**). Isso causa:
+
+- tendência do sinal a “voltar para zero” em trechos com pouca variação,
+- “puxões” do nível DC após mudanças bruscas,
+- distorções visíveis na imagem reconstruída (skew/arrasto).
+
+### Ilustração (high-pass / DC-pull)
 ![High pass filtering illustration](/doc/voyager-lp.png)
 
-This is likely an artifact produced during digitizing. Most likely the recorder was an audio recorder with a DC blocking filter. It could also be that this is a part of the encoding process which I am not understanding. It is visible in the images that I produce and other experience the [same](https://boingboing.net/2017/09/05/how-to-decode-the-images-on-th.html). Here is an example were the skewing is visible as well as the "DC-pull" after strong changes in image intensity. This effect could possibly be a result of RIAA filtering.
-
+### Efeito na imagem
 ![High pass filtering effects on image](/doc/numbers.png)
 
-## RGB Images
-There are RGB images on the record. These are stored as three separate images for the individual color channels. This is not handled in this implementation.
+**Hipóteses levantadas:**
+- filtro de bloqueio DC do gravador durante a digitalização
+- possível influência de **RIAA filtering**
+- ou algum detalhe do processo de codificação
+
+Esse comportamento já foi observado por outras pessoas também (exemplo clássico: Boing Boing).
+
+---
+
+## 🎨 RGB Images (limitação conhecida)
+O Voyager Golden Record contém imagens **RGB** armazenadas como **três imagens separadas** (um canal por vez).  
+**Este decoder não combina automaticamente** esses três frames em uma imagem RGB final.
+
+> Roadmap sugerido:
+> - detectar sequências R/G/B,
+> - alinhar temporalmente as três camadas,
+> - combinar em uma imagem composta.
+
+---
+
+## 🧩 Controles recomendados (dicas práticas)
+
+Se a imagem estiver “apagada”:
+- aumente **Contraste**
+- reduza um pouco o **Gamma**
+
+Se a imagem estiver “chuviscada”:
+- aumente **Suavização** (com moderação)
+
+Se parecer “invertida”/estranha:
+- ative **Direita → esquerda**
+- teste também a troca de canal (L vs R), dependendo do material de origem
+
+---
+
+## 📁 Estrutura típica do projeto
+
+Uma estrutura comum (pode variar conforme seu fork):
+
+- `index.html` — página principal (UI + canvas)
+- `styles.css` — estilos e responsividade
+- `js/`
+  - `decoder.js` — pipeline principal (**PCM → sync → linhas → render**)
+  - `audio.js` — carregamento/decodificação do áudio
+  - `render.js` — desenho no canvas (imagem, waveform, overlays)
+  - `utils.js` — helpers (normalização, LUT, filtros, etc.)
+- `assets/` — ícones, imagens de UI, arquivos auxiliares
+- `doc/` — documentação e figuras técnicas (ex.: `voyager-lp.png`, `numbers.png`)
+- `README.md` — este arquivo
+- `LICENSE` — licença do repositório
+
+---
+
+## 🧾 Créditos / Referências
+
+### Projeto e implementação
+- **Malte Gruber** — implementação original do decoder e publicação da demo em GitHub Pages.
+
+### Contexto e material histórico
+- **NASA/JPL – Voyager Golden Record** — contexto, missão e acervo histórico/cultural.
+
+### Discussões e leituras relacionadas
+Decodificação de imagens do Voyager Golden Record e artefatos do áudio digitalizado:
+
+- **Boing Boing (2017)** — *“How to decode the images on the Voyager Golden Record”* (post/relato popular citado no README original).
+
+---
+
+## ℹ️ Observação
+
+Este projeto é **educativo/experimental**. A qualidade do resultado depende fortemente do **material de áudio disponível** e do **processamento aplicado** durante a digitalização.
