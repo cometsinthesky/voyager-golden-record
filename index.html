@@ -6,9 +6,33 @@
   <title>Voyager Golden Record • Image Decoder</title>
   <meta name="description" content="Decodificação ao vivo (no navegador) das imagens do Disco de Ouro da Voyager a partir do áudio do disco." />
   <link rel="icon" type="image/png" href="icon.png" />
+
+  <!-- Typography: Lora (project font) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet" />
+
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <div id="introOverlay" class="introOverlay" role="dialog" aria-modal="true" aria-label="Introdução">
+    <div class="introOverlay__card">
+      <div class="introOverlay__text">
+        <p>Lançada em 5 de setembro de 1977, a sonda Voyager 1 segue atravessando o espaço a cerca de 61.000 km/h, levando consigo uma cápsula do tempo com a História da humanidade.</p>
+
+        <p>Em 25 de agosto de 2012, ela cruzou os limites da influência do nosso Sol e entrou no espaço interestelar, tornando-se o primeiro objeto humano a alcançar essa fronteira.</p>
+
+        <p>A bordo, viaja uma mensagem única: o Voyager Golden Record, um disco banhado a ouro com sons e imagens da Terra, pensado para contar quem somos a qualquer inteligência que um dia o encontre.</p>
+
+        <p>Agora, você está prestes a experimentar algo raro: o que uma possível civilização inteligente poderia ver ao decodificar o Disco de Ouro da Voyager.</p>
+      </div>
+      <div class="introOverlay__actions">
+        <button id="introClose" class="btn btn--primary" type="button">Começar</button>
+      </div>
+    </div>
+  </div>
+
   <header class="topbar">
     <div class="brand">
       <img class="brand__icon" src="icon.png" alt="" />
@@ -39,7 +63,7 @@
           <ul>
             <li>O decodificador procura pulsos de sincronismo (sync) e “recorta” cada linha.</li>
             <li>O sinal (amostras) é convertido em intensidade (tons de cinza) e desenhado no canvas.</li>
-            <li>Você pode ajustar <em>contraste, gamma, suavização</em> e também inverter (direita→esquerda).</li>
+            <li>Você pode ajustar <em>contraste, gamma, suavização</em> e também ajustar direção de leitura.</li>
           </ul>
         </details>
 
@@ -98,18 +122,18 @@
                 <input id="leftGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
               </div>
               <div class="slider">
-                <label>Suavização <span id="leftSmoothVal" class="muted">2</span></label>
-                <input id="leftSmooth" type="range" min="0" max="6" step="1" value="2" />
+                <label>Suavização <span id="leftSmoothVal" class="muted">1</span></label>
+                <input id="leftSmooth" type="range" min="0" max="6" step="1" value="1" />
               </div>
               <label class="toggle">
-                <input id="leftRTL" type="checkbox" checked />
+                <input id="leftRTL" type="checkbox" />
                 <span>Direita → esquerda</span>
               </label>
             </div>
           </div>
 
           <canvas id="plotLeft" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
-          <canvas id="imgCanvasLeft" width="760" height="620" class="imageCanvas rtl">Seu navegador não suporta canvas.</canvas>
+          <canvas id="imgCanvasLeft" width="620" height="760" class="imageCanvas">Seu navegador não suporta canvas.</canvas>
         </div>
       </article>
 
@@ -151,26 +175,25 @@
                 <input id="rightGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
               </div>
               <div class="slider">
-                <label>Suavização <span id="rightSmoothVal" class="muted">2</span></label>
-                <input id="rightSmooth" type="range" min="0" max="6" step="1" value="2" />
+                <label>Suavização <span id="rightSmoothVal" class="muted">1</span></label>
+                <input id="rightSmooth" type="range" min="0" max="6" step="1" value="1" />
               </div>
               <label class="toggle">
-                <input id="rightRTL" type="checkbox" checked />
+                <input id="rightRTL" type="checkbox" />
                 <span>Direita → esquerda</span>
               </label>
             </div>
           </div>
 
           <canvas id="plotRight" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
-          <canvas id="imgCanvasRight" width="760" height="620" class="imageCanvas rtl">Seu navegador não suporta canvas.</canvas>
+          <canvas id="imgCanvasRight" width="620" height="760" class="imageCanvas">Seu navegador não suporta canvas.</canvas>
         </div>
       </article>
     </section>
 
     <footer class="footer">
       <div class="muted">
-        Baseado no trabalho original (Malte Gruber, 2018). Esta versão moderniza layout e adiciona controles de imagem.
-      </div>
+        Baseado no trabalho original (Malte Gruber, 2018). Modernização de layout + controles. <strong>Fonte de todo o projeto: Lora.</strong></div>
     </footer>
   </main>
 

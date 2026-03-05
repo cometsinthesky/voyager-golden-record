@@ -1,7 +1,7 @@
 /* Voyager Golden Record - modernized decoder UI
    - Keeps original decoding logic
    - Adds contrast/gamma/smoothing controls
-   - Right-to-left display via CSS toggle (canvas transform)
+   - Rotated rendering (-90°) with right-to-left scan direction
 */
 
 let debug = false;
@@ -20,7 +20,8 @@ const leftChannel = {
   // image settings
   contrast: 1.35,
   gamma: 0.90,
-  smooth: 2
+  smooth: 1,
+  rtl: false
 };
 
 const rightChannel = {
@@ -33,7 +34,8 @@ const rightChannel = {
   plotName: "plotRight",
   contrast: 1.35,
   gamma: 0.90,
-  smooth: 2
+  smooth: 1,
+  rtl: false
 };
 
 function clamp(v, lo, hi){ return v < lo ? lo : (v > hi ? hi : v); }
@@ -72,6 +74,18 @@ function scrollCanvasUp1(ctx, canvas){
   ctx.drawImage(canvas, 0, -1);
 }
 
+function scrollCanvasLeft1(ctx, canvas){
+  ctx.drawImage(canvas, -1, 0);
+  // clear the new rightmost column area (avoid smear)
+  ctx.clearRect(canvas.width - 1, 0, 1, canvas.height);
+}
+
+function scrollCanvasRight1(ctx, canvas){
+  ctx.drawImage(canvas, 1, 0);
+  // clear the new leftmost column area
+  ctx.clearRect(0, 0, 1, canvas.height);
+}
+
 /* Map audio sample -> grayscale (0..255), with smoothing + contrast + gamma */
 function sampleToGray(sample, contrast, gamma){
   // The original code inverted and scaled aggressively.
@@ -95,23 +109,30 @@ function sampleToGray(sample, contrast, gamma){
 function displayLatestScanline(channel){
   const canvas = document.getElementById(channel.canvasName);
   const ctx = canvas.getContext("2d", { willReadFrequently: false });
-  const w = canvas.width, h = canvas.height;
+  const W = canvas.width, H = canvas.height;
 
-  // shift old pixels up
-  scrollCanvasUp1(ctx, canvas);
+  // After rotating the rendering by -90° (conceptually),
+  // we draw each new scanline as a vertical column.
+  // To make the image "arrive" from right to left, we shift left by 1px
+  // and draw the new column on the right edge.
+  if(channel.rtl){
+    // optional: left-to-right (for comparison) when checkbox is ON
+    scrollCanvasRight1(ctx, canvas);
+  } else {
+    scrollCanvasLeft1(ctx, canvas);
+  }
 
-  const img = ctx.createImageData(w, 1);
-  const row = img.data;
+  const col = ctx.createImageData(1, H);
+  const data = col.data;
 
   const smoothN = channel.smooth | 0; // 0..6
   const half = Math.max(0, Math.min(6, smoothN));
 
-  for(let i=0;i<w;i++){
-    // Original indexed w-i; keep that orientation for correct decode.
-    // Display direction (LTR/RTL) is handled by CSS transform.
-    const idx0 = channel.offset + (w - 1 - i);
+  for(let y=0;y<H;y++){
+    // With the rotated mapping, pixel y corresponds to sample offset + y
+    const idx0 = channel.offset + y;
 
-    // Simple box blur in 1D across samples (reduces snow/noise)
+    // Simple 1D box blur along the sample axis
     let acc = 0;
     let n = 0;
     for(let k=-half;k<=half;k++){
@@ -124,15 +145,20 @@ function displayLatestScanline(channel){
 
     const g = sampleToGray(sAvg, channel.contrast, channel.gamma);
 
-    const p = i * 4;
-    row[p+0] = g;
-    row[p+1] = g;
-    row[p+2] = g;
-    row[p+3] = 255;
+    const p = y * 4;
+    data[p+0] = g;
+    data[p+1] = g;
+    data[p+2] = g;
+    data[p+3] = 255;
   }
 
-  // draw on last row
-  ctx.putImageData(img, 0, h - 1);
+  if(channel.rtl){
+    // draw new column at left
+    ctx.putImageData(col, 0, 0);
+  } else {
+    // draw new column at right
+    ctx.putImageData(col, W - 1, 0);
+  }
 }
 
 /* Finds the offset at the next sync pulse */
@@ -263,14 +289,14 @@ function bindSliders(){
       if(smoothVal) smoothVal.textContent = String(channel.smooth|0);
     });
 
-    // RTL toggle (CSS class)
+    // Direção (checkbox)
     const rtl = document.getElementById(prefix + "RTL");
-    const canvas = document.getElementById(channel.canvasName);
-    rtl?.addEventListener("change", () => {
-      if(!canvas) return;
-      if(rtl.checked) canvas.classList.add("rtl");
-      else canvas.classList.remove("rtl");
-    });
+    if(rtl){
+      channel.rtl = Boolean(rtl.checked);
+      rtl.addEventListener("change", () => {
+        channel.rtl = Boolean(rtl.checked);
+      });
+    }
   }
   bind(leftChannel, "left");
   bind(rightChannel, "right");
@@ -297,6 +323,26 @@ function loadingProgress(progress){
 
 bindButtonActions();
 bindSliders();
+bindIntroOverlay();
 
 // Provided by audio_loader.js (unchanged)
 loadSound("voyager.mp3", onloadCallback, loadingProgress);
+
+
+/* -------- Intro overlay -------- */
+function bindIntroOverlay(){
+  const overlay = document.getElementById("introOverlay");
+  const closeBtn = document.getElementById("introClose");
+  if(!overlay || !closeBtn) return;
+
+  function close(){
+    overlay.style.display = "none";
+  }
+  closeBtn.addEventListener("click", close);
+  overlay.addEventListener("click", (e) => {
+    if(e.target === overlay) close();
+  });
+  document.addEventListener("keydown", (e) => {
+    if(e.key === "Escape") close();
+  });
+}

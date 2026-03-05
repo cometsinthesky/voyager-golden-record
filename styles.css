@@ -15,11 +15,13 @@
 }
 
 *{box-sizing:border-box}
+button,input,select,textarea{font:inherit;color:inherit}
 html,body{height:100%}
 body{
   margin:0;
   color:var(--text);
-  font: 16px/1.55 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Cantarell,Noto Sans,sans-serif;
+  /* Project typography */
+  font: 16px/1.55 "Lora", ui-serif, Georgia, "Times New Roman", serif;
   background: radial-gradient(1200px 600px at 15% 10%, rgba(124,92,255,.18), transparent 60%),
               radial-gradient(900px 450px at 80% 15%, rgba(75,231,200,.12), transparent 55%),
               linear-gradient(180deg,var(--bg0),var(--bg1));
@@ -176,13 +178,50 @@ canvas{
   background: rgba(0,0,0,.25);
 }
 .oscilloscope{margin-bottom: 10px}
-.imageCanvas{image-rendering: auto}
-.imageCanvas.rtl{transform: scaleX(-1); transform-origin: center}
+.imageCanvas{
+  display:block;
+  width:100%;
+  height:auto;
+  background: #000;
+  border: 1px solid var(--stroke);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  image-rendering: auto;
+}
 
 .footer{
   margin-top: 18px;
   padding: 14px 4px 0;
   border-top: 1px solid var(--stroke);
+}
+
+
+/* Intro overlay */
+.introOverlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0,0,0,.70);
+}
+.introOverlay__card{
+  width: min(880px, 100%);
+  max-height: min(78vh, 720px);
+  overflow: auto;
+  background: rgba(10,16,40,.92);
+  border: 1px solid rgba(255,255,255,.14);
+  border-radius: 18px;
+  box-shadow: 0 22px 70px rgba(0,0,0,.65);
+  padding: 18px 18px 14px;
+}
+.introOverlay__text p{margin:0 0 12px}
+.introOverlay__actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding-top: 6px;
 }
 
 /* Responsive */
