@@ -118,19 +118,6 @@ Se parecer “invertida”/estranha:
 
 ---
 
-## 🛠️ Rodar localmente
-Por causa do Web Audio e de políticas de CORS, é melhor usar um servidor local:
-
-### Opção 1: VS Code Live Server
-- instale a extensão **Live Server**
-- clique em “Go Live”
-
-### Opção 2: Python (rápido)
-```bash
-python -m http.server 8000
-
----
-
 ## 📁 Estrutura típica do projeto
 
 Uma estrutura comum (pode variar conforme seu fork):
