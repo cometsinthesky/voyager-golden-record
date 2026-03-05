@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <title>Voyager Golden Record • Image Decoder</title>
+  <meta name="description" content="Decodificação ao vivo (no navegador) das imagens do Disco de Ouro da Voyager a partir do áudio do disco." />
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <img class="brand__icon" src="icon.png" alt="" />
+      <div class="brand__text">
+        <div class="brand__title">Voyager Golden Record</div>
+        <div class="brand__subtitle">Decodificador de imagens (browser-only)</div>
+      </div>
+    </div>
+
+    <div class="topbar__actions">
+      <button id="btnPauseAll" class="btn btn--ghost" type="button">⏸︎ Pausar</button>
+      <button id="btnPlayAll" class="btn btn--primary" type="button">▶︎ Reproduzir</button>
+      <a class="btn btn--ghost" href="https://github.com/MalteGruberPrivate/voyager-record-decoder" target="_blank" rel="noreferrer">Código fonte</a>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="hero">
+      <div class="hero__copy">
+        <h1>Imagens do Disco de Ouro — ao vivo</h1>
+        <p>
+          Esta página carrega um <strong>MP3</strong> com a leitura do disco e faz a <strong>decodificação no seu navegador</strong>,
+          linha a linha, em tempo real. Cada canal de áudio contém um conjunto diferente de imagens.
+        </p>
+
+        <details class="details">
+          <summary>Como funciona (resumo)</summary>
+          <ul>
+            <li>O decodificador procura pulsos de sincronismo (sync) e “recorta” cada linha.</li>
+            <li>O sinal (amostras) é convertido em intensidade (tons de cinza) e desenhado no canvas.</li>
+            <li>Você pode ajustar <em>contraste, gamma, suavização</em> e também inverter (direita→esquerda).</li>
+          </ul>
+        </details>
+
+        <div class="loader" id="loading_div">
+          <div class="loader__label" id="loading_text">Carregando áudio voyager.mp3…</div>
+          <div class="progress"><div id="load_progress" class="progress__bar" style="width:0%"></div></div>
+          <div class="loader__hint">Dica: se estiver lento, reduza “Suavização” e deixe a aba em foco.</div>
+        </div>
+      </div>
+
+      <div class="hero__art">
+        <img src="doc/voyager-lp.png" alt="Voyager Golden Record" class="hero__img" />
+        <div class="hero__badge">Decoder</div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="panel" id="panelLeft">
+        <header class="panel__header">
+          <div>
+            <h2>Canal Esquerdo</h2>
+            <div class="muted">Osciloscópio + imagem decodificada</div>
+          </div>
+          <div class="panel__headerActions">
+            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="left">⟲ Voltar</button>
+            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="left">▶︎/⏸︎</button>
+            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="left">Avançar ⟳</button>
+          </div>
+        </header>
+
+        <div class="panel__content">
+          <div class="controls">
+            <div class="controls__row">
+              <label class="label">Bookmarks</label>
+              <div class="chips">
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="1320900">Círculo</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="19813754">Célula?</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="17246644">Órgãos</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="20860305">Embrião</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="23967459">Pessoas</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="28481695">Números</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="7628908">Júpiter</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="8169155">Terra</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="11165669">Carbono</button>
+                <button class="chip" data-action="bookmark" data-channel="left" data-offset="12150593">DNA</button>
+              </div>
+            </div>
+
+            <div class="controls__row controls__row--sliders">
+              <div class="slider">
+                <label>Contraste <span id="leftContrastVal" class="muted">1.35</span></label>
+                <input id="leftContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.35" />
+              </div>
+              <div class="slider">
+                <label>Gamma <span id="leftGammaVal" class="muted">0.90</span></label>
+                <input id="leftGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
+              </div>
+              <div class="slider">
+                <label>Suavização <span id="leftSmoothVal" class="muted">2</span></label>
+                <input id="leftSmooth" type="range" min="0" max="6" step="1" value="2" />
+              </div>
+              <label class="toggle">
+                <input id="leftRTL" type="checkbox" checked />
+                <span>Direita → esquerda</span>
+              </label>
+            </div>
+          </div>
+
+          <canvas id="plotLeft" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
+          <canvas id="imgCanvasLeft" width="760" height="620" class="imageCanvas rtl">Seu navegador não suporta canvas.</canvas>
+        </div>
+      </article>
+
+      <article class="panel" id="panelRight">
+        <header class="panel__header">
+          <div>
+            <h2>Canal Direito</h2>
+            <div class="muted">Osciloscópio + imagem decodificada</div>
+          </div>
+          <div class="panel__headerActions">
+            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="right">⟲ Voltar</button>
+            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="right">▶︎/⏸︎</button>
+            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="right">Avançar ⟳</button>
+          </div>
+        </header>
+
+        <div class="panel__content">
+          <div class="controls">
+            <div class="controls__row">
+              <label class="label">Bookmarks</label>
+              <div class="chips">
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="3584332">Lagarto</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="4070813">Águia</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="4651956">Zebras</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="17257470">Pessoa</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="18204290">Mais pessoas</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="20785176">Casa</button>
+                <button class="chip" data-action="bookmark" data-channel="right" data-offset="25833852">ONU?</button>
+              </div>
+            </div>
+
+            <div class="controls__row controls__row--sliders">
+              <div class="slider">
+                <label>Contraste <span id="rightContrastVal" class="muted">1.35</span></label>
+                <input id="rightContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.35" />
+              </div>
+              <div class="slider">
+                <label>Gamma <span id="rightGammaVal" class="muted">0.90</span></label>
+                <input id="rightGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
+              </div>
+              <div class="slider">
+                <label>Suavização <span id="rightSmoothVal" class="muted">2</span></label>
+                <input id="rightSmooth" type="range" min="0" max="6" step="1" value="2" />
+              </div>
+              <label class="toggle">
+                <input id="rightRTL" type="checkbox" checked />
+                <span>Direita → esquerda</span>
+              </label>
+            </div>
+          </div>
+
+          <canvas id="plotRight" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
+          <canvas id="imgCanvasRight" width="760" height="620" class="imageCanvas rtl">Seu navegador não suporta canvas.</canvas>
+        </div>
+      </article>
+    </section>
+
+    <footer class="footer">
+      <div class="muted">
+        Baseado no trabalho original (Malte Gruber, 2018). Esta versão moderniza layout e adiciona controles de imagem.
+      </div>
+    </footer>
+  </main>
+
+  <script src="audio_loader.js"></script>
+  <script src="voyager-modern.js"></script>
+</body>
+</html>
