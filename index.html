@@ -26,6 +26,8 @@
         <p>A bordo, viaja uma mensagem única: o Voyager Golden Record, um disco banhado a ouro com sons e imagens da Terra, pensado para contar quem somos a qualquer inteligência que um dia o encontre.</p>
 
         <p>Agora, você está prestes a experimentar algo raro: o que uma possível civilização inteligente poderia ver ao decodificar o Disco de Ouro da Voyager.</p>
+
+        <p class="muted" style="margin-top:14px">Fonte de todo o projeto: <strong>Lora</strong>.</p>
       </div>
       <div class="introOverlay__actions">
         <button id="introClose" class="btn btn--primary" type="button">Começar</button>
@@ -87,11 +89,7 @@
             <h2>Canal Esquerdo</h2>
             <div class="muted">Osciloscópio + imagem decodificada</div>
           </div>
-          <div class="panel__headerActions">
-            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="left">⟲ Voltar</button>
-            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="left">▶︎/⏸︎</button>
-            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="left">Avançar ⟳</button>
-          </div>
+          
         </header>
 
         <div class="panel__content">
@@ -114,26 +112,28 @@
 
             <div class="controls__row controls__row--sliders">
               <div class="slider">
-                <label>Contraste <span id="leftContrastVal" class="muted">1.35</span></label>
-                <input id="leftContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.35" />
+                <label>Contraste <span id="leftContrastVal" class="muted">1.30</span></label>
+                <input id="leftContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.30" />
               </div>
               <div class="slider">
-                <label>Gamma <span id="leftGammaVal" class="muted">0.90</span></label>
-                <input id="leftGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
+                <label>Gamma <span id="leftGammaVal" class="muted">1.00</span></label>
+                <input id="leftGamma" type="range" min="0.40" max="2.20" step="0.01" value="1.00" />
               </div>
               <div class="slider">
-                <label>Suavização <span id="leftSmoothVal" class="muted">1</span></label>
-                <input id="leftSmooth" type="range" min="0" max="6" step="1" value="1" />
+                <label>Suavização <span id="leftSmoothVal" class="muted">0</span></label>
+                <input id="leftSmooth" type="range" min="0" max="6" step="1" value="0" />
               </div>
-              <label class="toggle">
-                <input id="leftRTL" type="checkbox" />
-                <span>Direita → esquerda</span>
-              </label>
-            </div>
+</div>
           </div>
 
           <canvas id="plotLeft" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
           <canvas id="imgCanvasLeft" width="620" height="760" class="imageCanvas">Seu navegador não suporta canvas.</canvas>
+          <div class="panel__footerActions">
+            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="left">⟲ Voltar</button>
+            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="left">▶︎/⏸︎</button>
+            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="left">Avançar ⟳</button>
+          </div>
+
         </div>
       </article>
 
@@ -143,11 +143,7 @@
             <h2>Canal Direito</h2>
             <div class="muted">Osciloscópio + imagem decodificada</div>
           </div>
-          <div class="panel__headerActions">
-            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="right">⟲ Voltar</button>
-            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="right">▶︎/⏸︎</button>
-            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="right">Avançar ⟳</button>
-          </div>
+          
         </header>
 
         <div class="panel__content">
@@ -167,33 +163,35 @@
 
             <div class="controls__row controls__row--sliders">
               <div class="slider">
-                <label>Contraste <span id="rightContrastVal" class="muted">1.35</span></label>
-                <input id="rightContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.35" />
+                <label>Contraste <span id="rightContrastVal" class="muted">1.30</span></label>
+                <input id="rightContrast" type="range" min="0.4" max="3.0" step="0.01" value="1.30" />
               </div>
               <div class="slider">
-                <label>Gamma <span id="rightGammaVal" class="muted">0.90</span></label>
-                <input id="rightGamma" type="range" min="0.40" max="2.20" step="0.01" value="0.90" />
+                <label>Gamma <span id="rightGammaVal" class="muted">1.00</span></label>
+                <input id="rightGamma" type="range" min="0.40" max="2.20" step="0.01" value="1.00" />
               </div>
               <div class="slider">
-                <label>Suavização <span id="rightSmoothVal" class="muted">1</span></label>
-                <input id="rightSmooth" type="range" min="0" max="6" step="1" value="1" />
+                <label>Suavização <span id="rightSmoothVal" class="muted">0</span></label>
+                <input id="rightSmooth" type="range" min="0" max="6" step="1" value="0" />
               </div>
-              <label class="toggle">
-                <input id="rightRTL" type="checkbox" />
-                <span>Direita → esquerda</span>
-              </label>
-            </div>
+</div>
           </div>
 
           <canvas id="plotRight" width="760" height="140" class="oscilloscope">Seu navegador não suporta canvas.</canvas>
           <canvas id="imgCanvasRight" width="620" height="760" class="imageCanvas">Seu navegador não suporta canvas.</canvas>
+          <div class="panel__footerActions">
+            <button class="btn btn--ghost" type="button" data-action="jumpBack" data-channel="right">⟲ Voltar</button>
+            <button class="btn btn--primary" type="button" data-action="toggle" data-channel="right">▶︎/⏸︎</button>
+            <button class="btn btn--ghost" type="button" data-action="jumpForward" data-channel="right">Avançar ⟳</button>
+          </div>
+
         </div>
       </article>
     </section>
 
     <footer class="footer">
       <div class="muted">
-        Baseado no trabalho original (Malte Gruber, 2018). Modernização de layout + controles. <strong>Fonte de todo o projeto: Lora.</strong></div>
+        Baseado no trabalho original (Malte Gruber, 2018). Modernização de layout + controles por Lucas Ferreira (UnB/PPGEduC).</div>
     </footer>
   </main>
 

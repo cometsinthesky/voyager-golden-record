@@ -18,9 +18,9 @@ const leftChannel = {
   canvasName: "imgCanvasLeft",
   plotName: "plotLeft",
   // image settings
-  contrast: 1.35,
-  gamma: 0.90,
-  smooth: 1,
+  contrast: 1.30,
+  gamma: 1.00,
+  smooth: 0,
   rtl: false
 };
 
@@ -32,9 +32,9 @@ const rightChannel = {
   haltOnError: false,
   canvasName: "imgCanvasRight",
   plotName: "plotRight",
-  contrast: 1.35,
-  gamma: 0.90,
-  smooth: 1,
+  contrast: 1.30,
+  gamma: 1.00,
+  smooth: 0,
   rtl: false
 };
 

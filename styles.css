@@ -90,7 +90,7 @@ hr{border:none;border-top:1px solid var(--stroke);margin:24px 0}
 .details summary{cursor:pointer; color: var(--muted); font-weight:600; margin-bottom:8px}
 .details ul{margin:10px 0 0; padding-left: 18px; color: var(--muted)}
 .hero__art{position:relative; overflow:hidden}
-.hero__img{width:100%; height:auto; display:block; border-radius: 14px; border:1px solid rgba(255,255,255,.10)}
+.hero__img{width:70%; max-width: 980px; height:auto; display:block; margin: 0 auto; border-radius: 14px; border:1px solid rgba(255,255,255,.10)}
 .hero__badge{
   position:absolute; top:14px; left:14px;
   padding:8px 10px;
@@ -130,13 +130,14 @@ hr{border:none;border-top:1px solid var(--stroke);margin:24px 0}
 }
 .panel__header h2{margin:0; font-size: 18px}
 .panel__headerActions{display:flex; gap:8px; flex-wrap:wrap}
+.panel__footerActions{display:flex; gap:8px; justify-content:center; padding-top: 10px; flex-wrap:wrap}
 .panel__content{padding: 14px 16px 16px}
 
 .controls{display:flex; flex-direction:column; gap: 12px; margin-bottom: 12px}
 .controls__row{display:flex; flex-direction:column; gap: 10px}
 .controls__row--sliders{
   display:grid;
-  grid-template-columns: 1fr 1fr 1fr auto;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 10px;
   align-items:end;
 }
