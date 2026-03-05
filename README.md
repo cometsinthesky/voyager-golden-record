@@ -1,4 +1,4 @@
-# Voyager Golden Record Decoder
+# Voyager Golden Record Decoder 💿
 
 Github hosted [DEMO HERE](https://maltegruber.github.io/voyager-record-decoder). *(Please ensure that your audio output device is at 44.1 kHz. Otherwise, the recorder might not lock or show images properly.)*
 
